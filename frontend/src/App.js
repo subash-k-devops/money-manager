@@ -14,6 +14,7 @@ import Reports from "./pages/Reports";
 import Accounts from "./pages/Accounts";
 import Settings from "./pages/Settings";
 import ReceiptReview from "./pages/ReceiptReview";
+import Home from "./pages/Home";
 import Categories from "./pages/Categories";
 
 export default function App({ setThemeMode }) {
@@ -35,7 +36,7 @@ export default function App({ setThemeMode }) {
 
       <Routes>
         {/* 🏠 Home */}
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />
 
         {/* 📃 Transactions (KEEP existing) */}
         <Route path="/transactions" element={<Transactions />} />

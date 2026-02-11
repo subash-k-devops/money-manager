@@ -138,6 +138,10 @@ const Add = () => {
     setForm((prev) => ({ ...prev, amount: String(prev.amount || "").slice(0, -1) }));
   };
   const handleKeypadDone = () => setShowKeypad(false);
+  const handleCloseKeypadAndCalculator = () => {
+    setShowKeypad(false);
+    setShowCalculator(false);
+  };
 
   const inputCalc = (v) => {
     setCalcExpr((s) => s + v);
@@ -941,7 +945,7 @@ const Add = () => {
       <Drawer
         anchor="bottom"
         open={showKeypad || showCalculator}
-        onClose={handleKeypadDone}
+        onClose={handleCloseKeypadAndCalculator}
         sx={{
           "& .MuiDrawer-paper": {
             borderTopLeftRadius: 16,
@@ -965,7 +969,7 @@ const Add = () => {
             <Typography variant="body2" fontWeight={600}>
               Amount
             </Typography>
-            <IconButton size="small" onClick={handleKeypadDone}>
+            <IconButton size="small" onClick={handleCloseKeypadAndCalculator}>
               <CloseIcon fontSize="small" />
             </IconButton>
           </Box>
