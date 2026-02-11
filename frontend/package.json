@@ -1,0 +1,26 @@
+{
+  "name": "money-manager",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": ".",
+  "dependencies": {
+    "@mui/material": "^5.15.14",
+    "@mui/icons-material": "^5.15.14",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "5.0.1",
+    "recharts": "^2.12.7",
+    "dayjs": "^1.11.10",
+    "tesseract.js": "^5.1.0",
+
+    "ajv": "6.12.6",
+    "ajv-keywords": "3.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build"
+  }
+}
