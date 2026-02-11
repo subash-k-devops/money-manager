@@ -15,10 +15,31 @@ import {
   Button,
   TextField,
   MenuItem,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { getTransactions, updateTransaction, saveTransactions, getAccounts } from "../storage";
+import FilterBar from "../components/FilterBar";
+
+// helpers to compute date ranges for presets
+const getToday = () => {
+  const d = new Date();
+  return d.toISOString().split("T")[0];
+};
+const getStartOfWeek = () => {
+  const d = new Date();
+  const day = d.getDay(); // 0 Sun
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday as start
+  const monday = new Date(d.setDate(diff));
+  return monday.toISOString().split("T")[0];
+};
+const getStartOfMonth = () => {
+  const d = new Date();
+  d.setDate(1);
+  return d.toISOString().split("T")[0];
+};
 
 export default function Transactions() {
   const location = useLocation();
@@ -33,10 +54,30 @@ export default function Transactions() {
     date: "",
     note: "",
   });
+  const [range, setRange] = useState("daily");
+  const [filters, setFilters] = useState({
+    from: "",
+    to: "",
+    type: "all",
+    category: "",
+  });
 
   useEffect(() => {
     setTxns(getTransactions());
   }, [location.pathname]);
+
+  useEffect(() => {
+    // when range changes, update filters.from/to appropriately
+    if (range === "daily") {
+      setFilters((f) => ({ ...f, from: getToday(), to: getToday() }));
+    } else if (range === "weekly") {
+      setFilters((f) => ({ ...f, from: getStartOfWeek(), to: getToday() }));
+    } else if (range === "monthly") {
+      setFilters((f) => ({ ...f, from: getStartOfMonth(), to: getToday() }));
+    } else {
+      setFilters((f) => ({ ...f, from: "", to: "" }));
+    }
+  }, [range]);
 
   const deleteTxn = (id) => {
     if (!window.confirm("Delete this transaction?")) return;
@@ -44,6 +85,19 @@ export default function Transactions() {
     saveTransactions(updated);
     setTxns(updated);
   };
+
+  const resetFilters = () => {
+    setFilters({ from: "", to: "", type: "all", category: "" });
+    setRange("total");
+  };
+
+  const filteredTxns = txns.filter((t) => {
+    if (filters.type !== "all" && t.type !== filters.type) return false;
+    if (filters.category && !t.category.toLowerCase().includes(filters.category.toLowerCase())) return false;
+    if (filters.from && t.date < filters.from) return false;
+    if (filters.to && t.date > filters.to) return false;
+    return true;
+  });
 
   const openEdit = (t) => {
     setEditId(t.id);
@@ -79,12 +133,23 @@ export default function Transactions() {
 
   return (
     <Container sx={{ pb: 9, pt: 2 }}>
-      {txns.length === 0 ? (
+      <Box sx={{ mb: 2 }}>
+        <Tabs value={range} onChange={(_, v) => setRange(v)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+          <Tab label="Daily" value="daily" />
+          <Tab label="Weekly" value="weekly" />
+          <Tab label="Monthly" value="monthly" />
+          <Tab label="Total" value="total" />
+        </Tabs>
+      </Box>
+
+      <FilterBar filters={filters} setFilters={setFilters} onReset={resetFilters} />
+
+      {filteredTxns.length === 0 ? (
         <Typography color="text.secondary" align="center">
-          No transactions yet
+          No transactions found
         </Typography>
       ) : (
-        txns.map((t) => (
+        filteredTxns.map((t) => (
           <Paper
             key={t.id}
             sx={{
@@ -98,11 +163,10 @@ export default function Transactions() {
           >
             <Box sx={{ flex: 1 }}>
               <Typography sx={{ fontWeight: 600 }}>
-                {t.emoji && `${t.emoji} `}{t.category}
+                {t.emoji && `${t.emoji} `}{t.mainCategory ? `${t.mainCategory}/${t.category}` : t.category}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {t.date} • {t.account}
-                {t.source === "receipt" && " • Receipt"}
+                {t.date} • {t.account} {t.note ? `• ${t.note}` : ""} {t.source === "receipt" && " • Receipt"}
               </Typography>
             </Box>
 
