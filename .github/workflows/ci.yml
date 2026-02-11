@@ -18,7 +18,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies (frontend)\n+        working-directory: ./frontend\n+        # Use `npm ci` for deterministic installs now that package-lock.json is committed\n+        run: npm ci --legacy-peer-deps
+      - name: Install dependencies (frontend)
+        working-directory: ./frontend
+        # Use `npm ci` for deterministic installs now that package-lock.json is committed
+        run: npm ci --legacy-peer-deps
 
       - name: Build frontend
         working-directory: ./frontend
