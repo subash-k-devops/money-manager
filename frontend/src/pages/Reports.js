@@ -22,6 +22,8 @@ import {
   Legend,
 } from "recharts";
 import { getTransactions } from "../storage";
+import { CATEGORY_MASTER } from "../master/categories";
+import { useState } from "react";
 import FilterBar from "../components/FilterBar";
 
 const COLORS = [
@@ -34,6 +36,7 @@ const COLORS = [
 
 const Reports = () => {
   const [range, setRange] = useState("monthly");
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [filters, setFilters] = useState({
     from: "",
     to: "",
@@ -78,6 +81,10 @@ const Reports = () => {
       return acc;
     }, {})
   );
+  // Helper to get emoji for main category
+  const emojiFor = (name) => {
+    return CATEGORY_MASTER[name]?.emoji || "";
+  };
 
   /* BAR DATA */
   const barData = [
@@ -132,13 +139,24 @@ const Reports = () => {
                   isAnimationActive={true}
                   animationDuration={800}
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}
+                  label={({ name, percent }) => `${emojiFor(name)} ${name} ${Math.round(percent * 100)}%`}
+                  onMouseEnter={(_, index) => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(-1)}
                 >
-                  {pieData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  {pieData.map((entry, i) => (
+                    <Cell
+                      key={i}
+                      fill={COLORS[i % COLORS.length]}
+                      stroke={i === activeIndex ? "#000" : undefined}
+                      strokeWidth={i === activeIndex ? 3 : 1}
+                    />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v) => `₹ ${v}`} />
+                <Tooltip
+                  formatter={(v) => `₹ ${v}`}
+                  contentStyle={{ borderRadius: 8 }}
+                  itemStyle={{ display: "flex", gap: 8, alignItems: "center" }}
+                />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
