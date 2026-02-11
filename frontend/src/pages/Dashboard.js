@@ -4,6 +4,7 @@ import {
   Tabs,
   Tab,
   Grid,
+  Grow,
 } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -69,7 +70,9 @@ const Dashboard = () => {
       <Tabs
         value={range}
         onChange={handleChange}
-        variant="fullWidth"
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
         sx={{ mb: 3 }}
       >
         <Tab label="Daily" value="daily" />
@@ -79,30 +82,21 @@ const Dashboard = () => {
       </Tabs>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <SummaryCard
-            title="Income"
-            value={income}
-            color="success"
-            icon={<ArrowDownwardIcon />}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <SummaryCard
-            title="Expense"
-            value={expense}
-            color="error"
-            icon={<ArrowUpwardIcon />}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <SummaryCard
-            title="Balance"
-            value={balance}
-            color="primary"
-            icon={<AccountBalanceWalletIcon />}
-          />
-        </Grid>
+        {[{
+          title: 'Income', value: income, color: 'success', icon: <ArrowDownwardIcon />
+        },{
+          title: 'Expense', value: expense, color: 'error', icon: <ArrowUpwardIcon />
+        },{
+          title: 'Balance', value: balance, color: 'primary', icon: <AccountBalanceWalletIcon />
+        }].map((c, i) => (
+          <Grid item xs={12} md={4} key={c.title}>
+            <Grow in timeout={400 + i * 150}>
+              <Box>
+                <SummaryCard title={c.title} value={c.value} color={c.color} icon={c.icon} />
+              </Box>
+            </Grow>
+          </Grid>
+        ))}
 
         {budgetList.length > 0 && (
           <Grid item xs={12}>

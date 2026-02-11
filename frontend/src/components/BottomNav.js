@@ -67,12 +67,7 @@ const BottomNav = () => {
             sx={{ minWidth: 80 }}
           />
 
-          <BottomNavigationAction
-            label="Add"
-            value="/add"
-            icon={<AddCircleIcon sx={{ fontSize: 36 }} />}
-            sx={{ minWidth: 80 }}
-          />
+          {/* Add removed from bottom nav - use Home FAB for adding */}
 
           <BottomNavigationAction
             label="Calendar"
