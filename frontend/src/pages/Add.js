@@ -168,6 +168,21 @@ const Add = () => {
 
   const handleCategorySelect = (cat) => {
     if (type === "expense") {
+      // Auto-select first subcategory for faster entry (UX: main -> default sub)
+      if (cat.subs && cat.subs.length > 0) {
+        const first = cat.subs[0];
+        setForm({
+          ...form,
+          mainCategory: cat.name,
+          category: first.name,
+          emoji: first.emoji,
+        });
+        setShowCategoryPicker(false);
+        setShowSubPicker(false);
+        setSelectedMain(null);
+        return;
+      }
+      // fallback to open sub-picker if no subs
       setSelectedMain(cat);
       setShowSubPicker(true);
     } else if (type === "income") {
@@ -499,7 +514,7 @@ const Add = () => {
               <Typography variant="body1" fontWeight={600}>
                 {form.amount || "0"}
               </Typography>
-              <IconButton size="small" onClick={(e) => { e.stopPropagation(); setShowCalculator(true); }} title="Open calculator">
+              <IconButton size="small" onClick={(e) => { e.stopPropagation(); setShowCalculator(true); setShowKeypad(true); }} title="Open calculator">
                 <CalculateIcon />
               </IconButton>
             </Box>
@@ -963,84 +978,44 @@ const Add = () => {
               <CloseIcon fontSize="small" />
             </IconButton>
           </Box>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: 1,
-            }}
-          >
-            {KEYPAD_KEYS.map((key, i) =>
-              key === "" ? (
-                <Box key={i} />
-              ) : (
-                <Button
-                  key={i}
-                  variant="outlined"
-                  onClick={() => handleKeypadInput(key)}
-                  sx={{
-                    py: 2,
-                    borderRadius: 2,
-                    fontSize: "1.25rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  {key}
-                </Button>
-              )
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {showCalculator && (
+              <Box sx={{ p: 1, borderRadius: 1, bgcolor: inputBg }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                  <Typography variant="body2">Calculator</Typography>
+                  <Box>
+                    <Button size="small" onClick={clearCalc}>AC</Button>
+                    <Button size="small" onClick={backspaceCalc}>⌫</Button>
+                  </Box>
+                </Box>
+                <Box sx={{ textAlign: "right", minHeight: 36, mb: 1 }}>
+                  <Typography variant="h6">{calcExpr || "0"}</Typography>
+                </Box>
+                <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1 }}>
+                  {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","(",")"].map((k) => (
+                    <Button key={k} variant="outlined" onClick={() => inputCalc(k)} sx={{ py: 1.5 }}>{k}</Button>
+                  ))}
+                  <Button variant="contained" onClick={evalCalc} sx={{ gridColumn: "span 4", py: 1.5, bgcolor: THEME_BLUE, "&:hover": { bgcolor: "#1565c0" } }}>Use result</Button>
+                </Box>
+              </Box>
             )}
-            <Button
-              variant="outlined"
-              onClick={handleKeypadBackspace}
-              sx={{ py: 2, borderRadius: 2, fontSize: "1.25rem" }}
-            >
-              ⌫
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleKeypadDone}
-              sx={{
-                py: 2,
-                borderRadius: 2,
-                bgcolor: THEME_BLUE,
-                gridColumn: "span 2",
-                "&:hover": { bgcolor: "#1565c0" },
-              }}
-            >
+
+            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
+              {["1","2","3","4","5","6","7","8","9",".","0","⌫"].map((k) => (
+                <Button
+                  key={k}
+                  variant="outlined"
+                  onClick={() => (k === "⌫" ? handleKeypadBackspace() : handleKeypadInput(k))}
+                  sx={{ py: 2, borderRadius: 2, fontSize: "1.25rem", fontWeight: 600 }}
+                >
+                  {k}
+                </Button>
+              ))}
+            </Box>
+
+            <Button variant="contained" onClick={handleKeypadDone} sx={{ py: 2, borderRadius: 2, bgcolor: THEME_BLUE, "&:hover": { bgcolor: "#1565c0" } }}>
               Done
             </Button>
-          </Box>
-        </Box>
-      </Drawer>
-      {/* Calculator Drawer */}
-      <Drawer
-        anchor="bottom"
-        open={showCalculator}
-        onClose={() => setShowCalculator(false)}
-        sx={{
-          "& .MuiDrawer-paper": {
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            bgcolor: cardBg,
-            pb: "env(safe-area-inset-bottom)",
-          },
-        }}
-      >
-        <Box sx={{ p: 2 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-            <Typography variant="body2" fontWeight={600}>Calculator</Typography>
-            <IconButton size="small" onClick={() => setShowCalculator(false)}><CloseIcon fontSize="small" /></IconButton>
-          </Box>
-          <Box sx={{ mb: 2, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "flex-end", pr: 1 }}>
-            <Typography variant="h5">{calcExpr || "0"}</Typography>
-          </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1 }}>
-            {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","(",")"].map((k) => (
-              <Button key={k} variant="outlined" onClick={() => inputCalc(k)} sx={{ py: 2 }}>{k}</Button>
-            ))}
-            <Button variant="outlined" onClick={backspaceCalc} sx={{ py: 2 }}>⌫</Button>
-            <Button variant="outlined" onClick={clearCalc} sx={{ py: 2 }}>AC</Button>
-            <Button variant="contained" onClick={evalCalc} sx={{ py: 2, bgcolor: THEME_BLUE, "&:hover": { bgcolor: "#1565c0" } }}>Done</Button>
           </Box>
         </Box>
       </Drawer>
