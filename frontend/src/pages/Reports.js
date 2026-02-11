@@ -69,13 +69,12 @@ const Reports = () => {
   const totalIncome = income.reduce((s, t) => s + Number(t.amount), 0);
 
   /* DONUT DATA */
+  // Group by mainCategory when available (show main categories only)
   const pieData = Object.values(
     expenses.reduce((acc, cur) => {
-      acc[cur.category] = acc[cur.category] || {
-        name: cur.category,
-        value: 0,
-      };
-      acc[cur.category].value += Number(cur.amount);
+      const key = cur.mainCategory || cur.category || "Other";
+      acc[key] = acc[key] || { name: key, value: 0 };
+      acc[key].value += Number(cur.amount);
       return acc;
     }, {})
   );
@@ -130,6 +129,10 @@ const Reports = () => {
                   nameKey="name"
                   innerRadius={70}
                   outerRadius={100}
+                  isAnimationActive={true}
+                  animationDuration={800}
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${Math.round(percent * 100)}%`}
                 >
                   {pieData.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -146,13 +149,13 @@ const Reports = () => {
           <Paper sx={{ p: 2 }}>
             <Typography variant="subtitle1">Income vs Expense</Typography>
             <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={barData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="amount" fill="#1976d2" />
-              </BarChart>
+            <BarChart data={barData} isAnimationActive={true} animationDuration={800}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip formatter={(v) => `₹ ${v}`} />
+              <Legend />
+              <Bar dataKey="amount" fill="#1976d2" />
+            </BarChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
@@ -161,12 +164,12 @@ const Reports = () => {
           <Paper sx={{ p: 2 }}>
             <Typography variant="subtitle1">Expense Trend</Typography>
             <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={lineData}>
+            <LineChart data={lineData} isAnimationActive={true} animationDuration={800}>
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip formatter={(v) => `₹ ${v}`} />
                 <Legend />
-                <Line dataKey="amount" stroke="#f57c00" strokeWidth={3} />
+                <Line dataKey="amount" stroke="#f57c00" strokeWidth={3} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </Paper>

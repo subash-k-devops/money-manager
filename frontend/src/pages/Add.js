@@ -168,21 +168,7 @@ const Add = () => {
 
   const handleCategorySelect = (cat) => {
     if (type === "expense") {
-      // Auto-select first subcategory for faster entry (UX: main -> default sub)
-      if (cat.subs && cat.subs.length > 0) {
-        const first = cat.subs[0];
-        setForm({
-          ...form,
-          mainCategory: cat.name,
-          category: first.name,
-          emoji: first.emoji,
-        });
-        setShowCategoryPicker(false);
-        setShowSubPicker(false);
-        setSelectedMain(null);
-        return;
-      }
-      // fallback to open sub-picker if no subs
+      // Open subcategory picker so user can choose the exact subcategory
       setSelectedMain(cat);
       setShowSubPicker(true);
     } else if (type === "income") {
@@ -514,7 +500,7 @@ const Add = () => {
               <Typography variant="body1" fontWeight={600}>
                 {form.amount || "0"}
               </Typography>
-              <IconButton size="small" onClick={(e) => { e.stopPropagation(); setShowCalculator(true); setShowKeypad(true); }} title="Open calculator">
+              <IconButton size="small" onClick={(e) => { e.stopPropagation(); setShowCalculator(true); setShowKeypad(false); }} title="Open calculator">
                 <CalculateIcon />
               </IconButton>
             </Box>
@@ -543,7 +529,9 @@ const Add = () => {
               Category
             </Typography>
             <Typography variant="body2">
-              {form.emoji && form.category
+              {form.mainCategory && form.category
+                ? `${form.emoji || ""} ${form.mainCategory}/${form.category}`
+                : form.emoji && form.category
                 ? `${form.emoji} ${form.category}`
                 : "Select"}
             </Typography>
@@ -992,8 +980,15 @@ const Add = () => {
                   <Typography variant="h6">{calcExpr || "0"}</Typography>
                 </Box>
                 <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1 }}>
-                  {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","(",")"].map((k) => (
-                    <Button key={k} variant="outlined" onClick={() => inputCalc(k)} sx={{ py: 1.5 }}>{k}</Button>
+                  {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","+","="].map((k) => (
+                    <Button
+                      key={k}
+                      variant="outlined"
+                      onClick={() => (k === "=" ? evalCalc() : inputCalc(k))}
+                      sx={{ py: 1.5 }}
+                    >
+                      {k}
+                    </Button>
                   ))}
                   <Button variant="contained" onClick={evalCalc} sx={{ gridColumn: "span 4", py: 1.5, bgcolor: THEME_BLUE, "&:hover": { bgcolor: "#1565c0" } }}>Use result</Button>
                 </Box>
