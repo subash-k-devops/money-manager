@@ -23,7 +23,6 @@ import {
 } from "recharts";
 import { getTransactions } from "../storage";
 import { CATEGORY_MASTER } from "../master/categories";
-import { useState } from "react";
 import FilterBar from "../components/FilterBar";
 
 const COLORS = [
