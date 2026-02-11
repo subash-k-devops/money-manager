@@ -1,3 +1,80 @@
+# Money Manager — Personal Finance (Professional)
+
+:money_with_wings: Money Manager is a lightweight, offline-first personal finance web app for tracking income, expenses, transfers, and accounts. Built with React and Material UI, this repository contains the frontend used to record transactions, manage categories/accounts, review receipt scans, and visualize reports.
+
+Why this repo
+- Fast, responsive UI with dark/light themes
+- Category & account management (full CRUD)
+- Receipt scanning integration (local/mock OCR)
+- Budget tracking, bookmarks (frequent entries), and export/import backups
+- Deploys to GitHub Pages via GitHub Actions
+
+Live demo
+- After you push to `main` the included workflow will build and deploy the frontend to GitHub Pages. Enable Pages in the repository settings if required.
+
+Table of contents
+- Features
+- Quick start
+- Development
+- CI / Deployment
+- Contributing
+- License
+
+## Features
+- Add / Edit / Delete transactions (Income, Expense, Transfer)
+- Manage categories and subcategories with emoji support
+- Manage accounts (Assets / Liabilities)
+- Receipt upload & OCR scan → review and save line-items
+- Budgets per category and dashboard progress
+- Bookmarks (save frequent transactions)
+- Backup & Restore (JSON export/import)
+- Optional app passcode (session unlock)
+
+## Quick start
+Requirements:
+- Node.js 18+, npm
+
+Install & run locally:
+```bash
+# from repo root
+cd frontend
+npm install --legacy-peer-deps
+npm start
+```
+Open http://localhost:3000
+
+Build for production:
+```bash
+cd frontend
+npm ci --legacy-peer-deps
+npm run build
+# build output: frontend/build
+```
+
+## CI / Deployment (GitHub Actions)
+This repository includes a workflow at `.github/workflows/ci.yml` that:
+1. Checks out the code
+2. Installs dependencies (frontend)
+3. Builds the frontend
+4. Uploads the build artifact and deploys to GitHub Pages
+
+Workflow triggers:
+- push to `main`
+- manual dispatch
+
+If you want to publish to a custom domain or different branch, update the Pages settings in GitHub and modify the workflow accordingly.
+
+## Contributing
+- Please open issues for bugs and feature requests.
+- Pull requests should be small and focused — include tests or steps to reproduce.
+
+## Backup & Restore
+- Use Settings → Backup & Restore to export a JSON snapshot containing transactions, categories, accounts, budgets and bookmarks.
+- Import that JSON to restore state on another machine or after reinstall.
+
+## License
+This project is provided as-is. Add your desired license file (e.g. MIT) if you intend to open-source it.
+
 # money-manager-gitlab
 
 
