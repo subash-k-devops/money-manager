@@ -126,7 +126,10 @@ const Add = () => {
     }));
   };
 
-  const handleAmountClick = () => setShowKeypad(true);
+  const handleAmountClick = () => {
+    setShowKeypad(true);
+    setShowCalculator(false);
+  };
   const handleKeypadInput = (key) => {
     if (!key) return;
     setForm((prev) => ({ ...prev, amount: String(prev.amount || "") + key }));
@@ -937,7 +940,7 @@ const Add = () => {
       {/* Numeric keypad – Drawer */}
       <Drawer
         anchor="bottom"
-        open={showKeypad}
+        open={showKeypad || showCalculator}
         onClose={handleKeypadDone}
         sx={{
           "& .MuiDrawer-paper": {
