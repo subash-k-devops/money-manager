@@ -21,6 +21,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import GridViewIcon from "@mui/icons-material/GridView";
+import CalculateIcon from "@mui/icons-material/Calculate";
 import { useNavigate } from "react-router-dom";
 
 import { addTransaction, getAccounts, addBookmark, getBookmarks } from "../storage";
@@ -88,6 +89,8 @@ const Add = () => {
   const [selectedMain, setSelectedMain] = useState(null);
   const [scanningReceipt, setScanningReceipt] = useState(false);
   const [bookmarks, setBookmarks] = useState([]);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calcExpr, setCalcExpr] = useState("");
 
   const handleChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value });
@@ -132,6 +135,36 @@ const Add = () => {
     setForm((prev) => ({ ...prev, amount: String(prev.amount || "").slice(0, -1) }));
   };
   const handleKeypadDone = () => setShowKeypad(false);
+
+  const inputCalc = (v) => {
+    setCalcExpr((s) => s + v);
+  };
+
+  const clearCalc = () => setCalcExpr("");
+
+  const backspaceCalc = () => setCalcExpr((s) => s.slice(0, -1));
+
+  const evalCalc = () => {
+    // only allow safe characters
+    if (!/^[0-9+\-*/().\s]+$/.test(calcExpr)) {
+      alert("Invalid expression");
+      return;
+    }
+    try {
+      // eslint-disable-next-line no-new-func
+      const result = Function(`"use strict"; return (${calcExpr})`)();
+      const val = Number(result);
+      if (!Number.isFinite(val)) {
+        alert("Invalid result");
+        return;
+      }
+      setForm((prev) => ({ ...prev, amount: String(val) }));
+      setShowCalculator(false);
+      setCalcExpr("");
+    } catch (err) {
+      alert("Could not evaluate expression");
+    }
+  };
 
   const handleCategorySelect = (cat) => {
     if (type === "expense") {
@@ -462,9 +495,14 @@ const Add = () => {
             <Typography variant="body2" color="text.secondary">
               Amount
             </Typography>
-            <Typography variant="body1" fontWeight={600}>
-              {form.amount || "0"}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="body1" fontWeight={600}>
+                {form.amount || "0"}
+              </Typography>
+              <IconButton size="small" onClick={(e) => { e.stopPropagation(); setShowCalculator(true); }} title="Open calculator">
+                <CalculateIcon />
+              </IconButton>
+            </Box>
           </Box>
 
           {/* Category */}
@@ -971,6 +1009,38 @@ const Add = () => {
             >
               Done
             </Button>
+          </Box>
+        </Box>
+      </Drawer>
+      {/* Calculator Drawer */}
+      <Drawer
+        anchor="bottom"
+        open={showCalculator}
+        onClose={() => setShowCalculator(false)}
+        sx={{
+          "& .MuiDrawer-paper": {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            bgcolor: cardBg,
+            pb: "env(safe-area-inset-bottom)",
+          },
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+            <Typography variant="body2" fontWeight={600}>Calculator</Typography>
+            <IconButton size="small" onClick={() => setShowCalculator(false)}><CloseIcon fontSize="small" /></IconButton>
+          </Box>
+          <Box sx={{ mb: 2, minHeight: 48, display: "flex", alignItems: "center", justifyContent: "flex-end", pr: 1 }}>
+            <Typography variant="h5">{calcExpr || "0"}</Typography>
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1 }}>
+            {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","(",")"].map((k) => (
+              <Button key={k} variant="outlined" onClick={() => inputCalc(k)} sx={{ py: 2 }}>{k}</Button>
+            ))}
+            <Button variant="outlined" onClick={backspaceCalc} sx={{ py: 2 }}>⌫</Button>
+            <Button variant="outlined" onClick={clearCalc} sx={{ py: 2 }}>AC</Button>
+            <Button variant="contained" onClick={evalCalc} sx={{ py: 2, bgcolor: THEME_BLUE, "&:hover": { bgcolor: "#1565c0" } }}>Done</Button>
           </Box>
         </Box>
       </Drawer>

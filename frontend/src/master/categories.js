@@ -1,105 +1,145 @@
 // src/master/categories.js
 
 export const CATEGORY_MASTER = {
-    Food: {
-      emoji: "🍽️",
-      sub: {
-        Biriyani: "🍛",
-        Meals: "🍱",
-        Snacks: "🥨",
-        Tea: "☕",
-        Coffee: "☕",
-        Juice: "🥤",
-        Restaurant: "🍽️",
-        FastFood: "🍔",
-        Bakery: "🥐",
-      },
+  Investments: {
+    emoji: "💼",
+    sub: {
+      "Mutual Funds": "📈",
+      Stocks: "📊",
+      NPS: "🪙",
+      LIC: "🛡️",
+      "Postal / Small Savings": "✉️",
+      "Gold Jewel (Physical Gold)": "💍",
+      "Gold & Silver ETF": "🏵️",
+      "GPay Digital Gold": "🔒",
+      "Real Estate": "🏡",
+      "Health Insurance": "🩺",
+      "Knowledge / Learning": "📘",
     },
-  
-    "Grocery & Veggies": {
-      emoji: "🛒",
-      sub: {
-        "Shop Veggies": "🥕",
-        "Shop Fruits": "🍎",
-        Dairy: "🥛",
-        "Online Grocery": "🛍️",
-        Rice: "🌾",
-        Oil: "🫙",
-      },
+  },
+
+  Health: {
+    emoji: "🧘",
+    sub: {
+      Supplements: "💊",
+      Gym: "💪",
+      Hospital: "🏥",
+      Medicine: "💉",
+      "Lab and Tests": "🧪",
+      Parents: "👨‍👩‍👧‍👦",
     },
-  
-    Bills: {
-      emoji: "💡",
-      sub: {
-        "EB Bill": "⚡",
-        "Water Bill": "🚰",
-        "Gas Bill": "🔥",
-        "Mobile Recharge": "📱",
-        "WiFi Bill": "📶",
-        DTH: "📡",
-      },
+  },
+
+  Beauty: {
+    emoji: "💄",
+    sub: {
+      Cosmetics: "💅",
+      Parlour: "💇",
+      Accessories: "👜",
     },
-  
-    Health: {
-      emoji: "🧘",
-      sub: {
-        Medicine: "💊",
-        Hospital: "🏥",
-        Lab: "🧪",
-        Gym: "💪",
-        Supplements: "🧴",
-        Parents: "👨‍👩‍👧‍👦",
-      },
+  },
+
+  Apparel: {
+    emoji: "👕",
+    sub: {
+      Clothing: "👔",
+      Accessories: "🧣",
+      Shoes: "👟",
+      Laundry: "🧺",
     },
-  
-    Travel: {
-      emoji: "🚕",
-      sub: {
-        Taxi: "🚕",
-        Auto: "🛺",
-        Bus: "🚌",
-        Train: "🚆",
-        Flight: "✈️",
-        Fuel: "⛽",
-        Toll: "🛣️",
-      },
+  },
+
+  Household: {
+    emoji: "🏠",
+    sub: {
+      Appliances: "📺",
+      Furniture: "🪑",
+      Kitchen: "🍳",
+      Decoratives: "🕯️",
+      "House Rent": "🏠",
+      "Repair and Utilities": "🔧",
+      "Community Maintenance": "🧰",
     },
-  
-    Entertainment: {
-      emoji: "🎬",
-      sub: {
-        Movie: "🎥",
-        Netflix: "📺",
-        Prime: "📦",
-        Games: "🎮",
-        Events: "🎟️",
-      },
+  },
+
+  "Social Life": {
+    emoji: "🧑‍🤝‍🧑",
+    sub: {
+      "Office Team Outing": "🎉",
+      "Office Birthday": "🎂",
+      Friends: "🤝",
     },
-  
-    Shopping: {
-      emoji: "🛍️",
-      sub: {
-        Clothing: "👕",
-        Accessories: "👜",
-        Electronics: "📱",
-        Online: "🛒",
-      },
+  },
+
+  Food: {
+    emoji: "🍽️",
+    sub: {
+      Breakfast: "🥞",
+      Lunch: "🍽️",
+      Dinner: "🍛",
+      Restaurants: "🍽️",
+      "Tea / Coffee": "☕",
+      Juice: "🥤",
+      "Healthy Snacks": "🥗",
+      "Junk Snacks": "🍟",
+      "Online Orders": "🛵",
+      "Eating out": "🍴",
     },
-  
-    Education: {
-      emoji: "📚",
-      sub: {
-        Courses: "🎓",
-        Books: "📖",
-        Exams: "📝",
-      },
+  },
+
+  "Grocery & Veggies": {
+    emoji: "🛒",
+    sub: {
+      "Shop Veggies": "🥕",
+      "Shop Fruits": "🍎",
+      Dairy: "🥛",
+      "Online Grocery": "🛍️",
+      Rice: "🌾",
+      Oil: "🫙",
     },
-  
-    Others: {
-      emoji: "📦",
-      sub: {
-        Miscellaneous: "📌",
-      },
+  },
+
+  Travel: {
+    emoji: "🚕",
+    sub: {
+      Taxi: "🚕",
+      Auto: "🛺",
+      Bus: "🚌",
+      Train: "🚆",
+      Flight: "✈️",
+      Fuel: "⛽",
+      Toll: "🛣️",
     },
-  };
+  },
+
+  Entertainment: {
+    emoji: "🎬",
+    sub: {
+      Theater: "🎭",
+      Prime: "📦",
+      Netflix: "📺",
+      Hotstar: "🎞️",
+      "Fun Games": "🎯",
+      DTH: "📡",
+      "Other OTT": "📱",
+    },
+  },
+
+  Gift: {
+    emoji: "🎁",
+    sub: {
+      Family: "👨‍👩‍👧‍👦",
+      Friends: "🎉",
+      Public: "🧾",
+      "Mom Dad": "👪",
+    },
+  },
+
+  Others: {
+    emoji: "📦",
+    sub: {
+      Miscellaneous: "📌",
+    },
+  },
+};
   
