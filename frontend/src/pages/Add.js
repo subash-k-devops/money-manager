@@ -10,6 +10,8 @@ import {
   useTheme,
   alpha,
   CircularProgress,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
