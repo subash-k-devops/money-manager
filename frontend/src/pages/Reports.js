@@ -121,6 +121,7 @@ const Reports = () => {
         filters={filters}
         setFilters={setFilters}
         onReset={resetFilters}
+        categoryOptions={Object.keys(CATEGORY_MASTER)}
       />
 
       <Grid container spacing={2}>

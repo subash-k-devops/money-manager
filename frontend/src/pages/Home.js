@@ -84,29 +84,6 @@ const Home = () => {
         <AddIcon />
       </Fab>
 
-      {/* Secondary actions: AI Scan and Attach (hidden buttons) */}
-      <Box sx={{ position: "fixed", right: 16, bottom: 150, display: "flex", flexDirection: "column", gap: 1 }}>
-        <Button variant="contained" startIcon={<ReceiptLongIcon />} onClick={() => {
-          // open file picker for AI scan
-          const inp = document.createElement("input");
-          inp.type = "file";
-          inp.accept = "image/*,application/pdf";
-          inp.onchange = (e) => handleAIScan(e.target.files[0]);
-          inp.click();
-        }}>
-          AI Scan
-        </Button>
-        <Button variant="outlined" startIcon={<CameraAltIcon />} onClick={() => {
-          const inp = document.createElement("input");
-          inp.type = "file";
-          inp.accept = "image/*,application/pdf";
-          inp.onchange = (e) => handleAttach(e.target.files[0]);
-          inp.click();
-        }}>
-          Attach Bill
-        </Button>
-      </Box>
-
       <Drawer anchor="bottom" open={openAdd} onClose={() => setOpenAdd(false)}>
         <Box sx={{ width: "100%" }}>
           <Add />

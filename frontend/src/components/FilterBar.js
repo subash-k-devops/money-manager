@@ -52,13 +52,28 @@ const FilterBar = ({ filters, setFilters, onReset }) => {
         </Grid>
 
         <Grid item xs={6}>
-          <TextField
-            label="Category"
-            fullWidth
-            value={filters.category}
-            onChange={handleChange("category")}
-            placeholder="Food, Travel..."
-          />
+          {Array.isArray(categoryOptions) ? (
+            <TextField
+              select
+              label="Category"
+              fullWidth
+              value={filters.category}
+              onChange={handleChange("category")}
+            >
+              <MenuItem value="">All</MenuItem>
+              {categoryOptions.map((c) => (
+                <MenuItem key={c} value={c}>{c}</MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            <TextField
+              label="Category"
+              fullWidth
+              value={filters.category}
+              onChange={handleChange("category")}
+              placeholder="Food, Travel..."
+            />
+          )}
         </Grid>
 
         <Grid item xs={12}>

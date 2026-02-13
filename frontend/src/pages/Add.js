@@ -268,6 +268,7 @@ const Add = () => {
       emoji: form.emoji,
       account: type === "transfer" ? `${form.fromAccount} → ${form.toAccount}` : acc,
       amount: Number(amt),
+      attachments: form.attachments || [],
       date: form.date,
       note: form.note,
       description: form.description,
@@ -318,6 +319,36 @@ const Add = () => {
           splits: [],
         },
       });
+    } finally {
+      setScanningReceipt(false);
+    }
+  };
+
+  // AI scan upload inside Add: run OCR and populate form + attach file
+  const handleAIScanUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setScanningReceipt(true);
+    try {
+      // attach file
+      const attached = await fileToDataUrl(file);
+      setForm((prev) => ({ ...prev, attachments: [...(prev.attachments || []), attached] }));
+
+      // run OCR / AI scanner
+      const result = await scanReceipt(file);
+      const first = (result.items && result.items[0]) || {};
+      setForm((prev) => ({
+        ...prev,
+        amount: first.amount ? String(first.amount) : prev.amount,
+        date: result.date ? result.date.split("T")[0] : prev.date,
+        mainCategory: first.mainCategory || prev.mainCategory,
+        category: first.category || prev.category,
+        emoji: first.emoji || prev.emoji,
+        description: result.merchant || prev.description,
+      }));
+    } catch (err) {
+      console.error("AI scan failed", err);
+      alert("AI scan failed — please try manual attach");
     } finally {
       setScanningReceipt(false);
     }
@@ -719,6 +750,16 @@ const Add = () => {
                 accept="image/*,application/pdf"
                 onChange={handleManualAttach}
               />
+            </Button>
+            {/* AI Scan button */}
+            <Button
+              component="label"
+              disabled={scanningReceipt}
+              sx={{ minWidth: "auto", px: 1, ml: 1 }}
+              title="AI Scan receipt"
+            >
+              {scanningReceipt ? <CircularProgress size={24} /> : <ReceiptLongIcon />}
+              <input type="file" hidden accept="image/*,application/pdf" onChange={handleAIScanUpload} />
             </Button>
           </Box>
         </Box>
