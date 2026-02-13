@@ -110,6 +110,9 @@ export default function Transactions() {
       note: t.note || "",
     });
   };
+  const [detail, setDetail] = useState(null);
+  const openDetail = (t) => setDetail(t);
+  const closeDetail = () => setDetail(null);
 
   const closeEdit = () => {
     setEditId(null);
@@ -159,7 +162,9 @@ export default function Transactions() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+              cursor: "pointer",
             }}
+            onClick={() => openDetail(t)}
           >
             <Box sx={{ flex: 1 }}>
               <Typography sx={{ fontWeight: 600 }}>
@@ -177,13 +182,13 @@ export default function Transactions() {
                 variant={t.type === "expense" ? "filled" : "filled"}
                 sx={{ fontWeight: 600 }}
               />
-              <IconButton size="small" onClick={() => openEdit(t)} title="Edit">
+              <IconButton size="small" onClick={(e) => { e.stopPropagation(); openEdit(t); }} title="Edit">
                 <EditIcon fontSize="small" />
               </IconButton>
               <IconButton
                 size="small"
                 color="error"
-                onClick={() => deleteTxn(t.id)}
+                onClick={(e) => { e.stopPropagation(); deleteTxn(t.id); }}
                 title="Delete"
               >
                 <DeleteIcon fontSize="small" />
@@ -258,6 +263,35 @@ export default function Transactions() {
           <Button variant="contained" onClick={saveEdit}>Save</Button>
         </DialogActions>
       </Dialog>
+  {/* Detail dialog */}
+  <Dialog open={!!detail} onClose={closeDetail} fullWidth maxWidth="sm">
+    <DialogTitle>Transaction detail</DialogTitle>
+    <DialogContent>
+      {detail && (
+        <>
+          <Typography variant="h6">{detail.emoji ? `${detail.emoji} `: ""}{detail.mainCategory ? `${detail.mainCategory}/${detail.category}` : detail.category}</Typography>
+          <Typography variant="body2" color="text.secondary">{detail.date} • {detail.account}</Typography>
+          <Typography sx={{ fontWeight: 700, mt: 1 }}>₹ {detail.amount}</Typography>
+          {detail.note && <Typography sx={{ mt: 1 }}>{detail.note}</Typography>}
+          {detail.attachments && detail.attachments.length > 0 && (
+            <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {detail.attachments.map((a, i) => (
+                <Box key={i} sx={{ width: 160 }}>
+                  {a.type && a.type.startsWith("image/") ? (
+                    <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8 }} />
+                  ) : (
+                    <Box sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
+                      <Typography variant="caption">{a.name}</Typography>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
+        </>
+      )}
+    </DialogContent>
+  </Dialog>
     </Container>
   );
 }

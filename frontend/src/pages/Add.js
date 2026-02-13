@@ -81,6 +81,18 @@ const Add = () => {
     fromAccount: "",
     toAccount: "",
   });
+  // attachments: array of { name, type, dataUrl }
+  useEffect(() => {
+    if (!form.attachments) setForm((f) => ({ ...f, attachments: [] }));
+  }, []);
+
+  const fileToDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({ name: file.name, type: file.type, dataUrl: reader.result });
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
@@ -308,6 +320,18 @@ const Add = () => {
       });
     } finally {
       setScanningReceipt(false);
+    }
+  };
+
+  // manual attach (camera/button) - store attachment and don't run OCR
+  const handleManualAttach = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const attached = await fileToDataUrl(file);
+      setForm((prev) => ({ ...prev, attachments: [...(prev.attachments || []), attached] }));
+    } catch (err) {
+      console.error("Attach failed", err);
     }
   };
 
@@ -682,6 +706,7 @@ const Add = () => {
               component="label"
               disabled={scanningReceipt}
               sx={{ minWidth: "auto", px: 1 }}
+              title="Attach bill (manual)"
             >
               {scanningReceipt ? (
                 <CircularProgress size={24} />
@@ -691,8 +716,8 @@ const Add = () => {
               <input
                 type="file"
                 hidden
-                accept="image/*"
-                onChange={handleReceiptUpload}
+                accept="image/*,application/pdf"
+                onChange={handleManualAttach}
               />
             </Button>
           </Box>
@@ -722,6 +747,26 @@ const Add = () => {
             Continue
           </Button>
         </Box>
+        {/* Attachments preview */}
+        {form.attachments && form.attachments.length > 0 && (
+          <Box sx={{ p: 2 }}>
+            <Typography variant="subtitle2">Attachments</Typography>
+            <Box sx={{ display: "flex", gap: 1, mt: 1, flexWrap: "wrap" }}>
+              {form.attachments.map((a, i) => (
+                <Box key={i} sx={{ width: 120, textAlign: "center" }}>
+                  {a.type && a.type.startsWith("image/") ? (
+                    <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8 }} />
+                  ) : (
+                    <Box sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
+                      <DescriptionIcon />
+                      <Typography variant="caption">{a.name}</Typography>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        )}
       </Box>
 
       {/* Category picker – Drawer */}
