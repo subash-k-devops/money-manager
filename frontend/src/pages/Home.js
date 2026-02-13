@@ -14,6 +14,30 @@ const toDataUrl = (file) =>
   });
 
 const Home = () => {
+  // Simple ErrorBoundary to surface render/runtime errors inside Add
+  class ErrorBoundary extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+      return { hasError: true, error };
+    }
+    componentDidCatch(error, info) {
+      console.error("Add render error:", error, info);
+    }
+    render() {
+      if (this.state.hasError) {
+        return (
+          <Box sx={{ p: 4 }}>
+            <Typography variant="h6" color="error">Something went wrong rendering Add</Typography>
+            <Typography variant="body2" sx={{ whiteSpace: "pre-wrap", mt: 2 }}>{String(this.state.error)}</Typography>
+          </Box>
+        );
+      }
+      return this.props.children;
+    }
+  }
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedTxn, setSelectedTxn] = useState(null);
   const [previewSrc, setPreviewSrc] = useState(null);
@@ -64,7 +88,9 @@ const Home = () => {
 
       <Dialog fullScreen open={openAdd} onClose={() => setOpenAdd(false)}>
         <Box sx={{ width: "100%", height: "100vh", overflow: "auto" }}>
-          <Add />
+          <ErrorBoundary>
+            <Add />
+          </ErrorBoundary>
         </Box>
       </Dialog>
       <Dialog open={!!selectedTxn} onClose={closeDetail} fullWidth maxWidth="sm">
