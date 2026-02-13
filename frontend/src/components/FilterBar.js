@@ -7,7 +7,7 @@ import {
   Grid,
 } from "@mui/material";
 
-const FilterBar = ({ filters, setFilters, onReset }) => {
+const FilterBar = ({ filters, setFilters, onReset, categoryOptions }) => {
   const handleChange = (field) => (e) => {
     setFilters({ ...filters, [field]: e.target.value });
   };

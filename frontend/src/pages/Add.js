@@ -18,10 +18,12 @@ import LoopIcon from "@mui/icons-material/Loop";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import GridViewIcon from "@mui/icons-material/GridView";
 import CalculateIcon from "@mui/icons-material/Calculate";
+import DescriptionIcon from "@mui/icons-material/Description";
 import { useNavigate } from "react-router-dom";
 
 import { addTransaction, getAccounts, addBookmark, getBookmarks } from "../storage";
