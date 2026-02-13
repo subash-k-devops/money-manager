@@ -105,6 +105,7 @@ const Add = () => {
   const [bookmarks, setBookmarks] = useState([]);
   const [showCalculator, setShowCalculator] = useState(false);
   const [calcExpr, setCalcExpr] = useState("");
+  const [previewSrc, setPreviewSrc] = useState(null);
 
   const handleChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value });
@@ -798,7 +799,7 @@ const Add = () => {
               {form.attachments.map((a, i) => (
                 <Box key={i} sx={{ width: 120, textAlign: "center" }}>
                   {a.type && a.type.startsWith("image/") ? (
-                    <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8 }} />
+                    <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8, cursor: "pointer" }} onClick={() => setPreviewSrc(a.dataUrl)} />
                   ) : (
                     <Box sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
                       <DescriptionIcon />
@@ -810,6 +811,11 @@ const Add = () => {
             </Box>
           </Box>
         )}
+        <Dialog open={!!previewSrc} onClose={() => setPreviewSrc(null)} maxWidth="xl">
+          <DialogContent sx={{ p: 1, bgcolor: "background.default" }}>
+            {previewSrc && <img src={previewSrc} alt="preview" style={{ width: "100%", height: "auto", display: "block", margin: "0 auto" }} />}
+          </DialogContent>
+        </Dialog>
       </Box>
 
       {/* Category picker – Drawer */}

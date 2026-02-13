@@ -16,6 +16,7 @@ const toDataUrl = (file) =>
 const Home = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedTxn, setSelectedTxn] = useState(null);
+  const [previewSrc, setPreviewSrc] = useState(null);
 
   const txnsAll = useMemo(() => getTransactions().slice().reverse(), []);
 
@@ -80,7 +81,7 @@ const Home = () => {
                   {selectedTxn.attachments.map((a, i) => (
                     <Box key={i} sx={{ width: 160 }}>
                       {a.type && a.type.startsWith("image/") ? (
-                        <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8 }} />
+                        <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8, cursor: "pointer" }} onClick={() => setPreviewSrc(a.dataUrl)} />
                       ) : (
                         <Box sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
                           <Typography variant="caption">{a.name}</Typography>
@@ -92,6 +93,11 @@ const Home = () => {
               )}
             </>
           )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!previewSrc} onClose={() => setPreviewSrc(null)} maxWidth="xl">
+        <DialogContent sx={{ p: 1, bgcolor: "background.default" }}>
+          {previewSrc && <img src={previewSrc} alt="preview" style={{ width: "100%", height: "auto", display: "block", margin: "0 auto" }} />}
         </DialogContent>
       </Dialog>
     </Box>

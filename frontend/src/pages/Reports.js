@@ -54,11 +54,12 @@ const Reports = () => {
   /* APPLY FILTERS */
   const filtered = transactions.filter((t) => {
     if (filters.type !== "all" && t.type !== filters.type) return false;
-    if (
-      filters.category &&
-      !t.category.toLowerCase().includes(filters.category.toLowerCase())
-    )
-      return false;
+    if (filters.category) {
+      const sel = (filters.category || "").toString().toLowerCase();
+      const main = (t.mainCategory || "").toString().toLowerCase();
+      const cat = (t.category || "").toString().toLowerCase();
+      if (!(main === sel || cat === sel || cat.includes(sel))) return false;
+    }
     if (filters.from && t.date < filters.from) return false;
     if (filters.to && t.date > filters.to) return false;
     return true;
