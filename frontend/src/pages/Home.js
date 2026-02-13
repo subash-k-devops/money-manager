@@ -62,11 +62,11 @@ const Home = () => {
         <AddIcon />
       </Fab>
 
-      <Drawer anchor="bottom" open={openAdd} onClose={() => setOpenAdd(false)}>
-        <Box sx={{ width: "100%" }}>
+      <Dialog fullScreen open={openAdd} onClose={() => setOpenAdd(false)}>
+        <Box sx={{ width: "100%", height: "100vh", overflow: "auto" }}>
           <Add />
         </Box>
-      </Drawer>
+      </Dialog>
       <Dialog open={!!selectedTxn} onClose={closeDetail} fullWidth maxWidth="sm">
         <DialogTitle>Transaction detail</DialogTitle>
         <DialogContent>
