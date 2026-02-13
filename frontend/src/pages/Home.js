@@ -1,9 +1,6 @@
 import React, { useState, useMemo } from "react";
-import { Box, Paper, Typography, Fab, Drawer, Button } from "@mui/material";
+import { Box, Paper, Typography, Fab, Drawer, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import DescriptionIcon from "@mui/icons-material/Description";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import Dashboard from "./Dashboard";
 import Add from "./Add";
 import { getTransactions } from "../storage";
@@ -18,8 +15,7 @@ const toDataUrl = (file) =>
 
 const Home = () => {
   const [openAdd, setOpenAdd] = useState(false);
-  const [openAI, setOpenAI] = useState(false);
-  const [openAttach, setOpenAttach] = useState(false);
+  const [selectedTxn, setSelectedTxn] = useState(null);
 
   const txnsAll = useMemo(() => getTransactions().slice().reverse(), []);
 
@@ -32,27 +28,8 @@ const Home = () => {
     return txnsAll.filter((t) => t.date && t.date >= fromKey);
   }, [txnsAll]);
 
-  const handleAIScan = async (file) => {
-    if (!file) return;
-    setOpenAI(false);
-    // convert to data URL and navigate into Add via state by opening Add drawer with state
-    const d = await toDataUrl(file);
-    // navigate into Add with scanned processing: Add.js will read location.state.scanned if present
-    // We'll open Add and pass scanned file via sessionStorage to keep simple
-    sessionStorage.setItem("incomingAttachment", JSON.stringify(d));
-    // also mark that AI scan should run in Add; we store a flag with a placeholder key
-    sessionStorage.setItem("incomingAI", "1");
-    setOpenAdd(true);
-  };
-
-  const handleAttach = async (file) => {
-    if (!file) return;
-    setOpenAttach(false);
-    const d = await toDataUrl(file);
-    sessionStorage.setItem("incomingAttachment", JSON.stringify(d));
-    sessionStorage.removeItem("incomingAI");
-    setOpenAdd(true);
-  };
+  const openDetail = (t) => setSelectedTxn(t);
+  const closeDetail = () => setSelectedTxn(null);
 
   return (
     <Box sx={{ p: 2, pb: 10 }}>
@@ -61,11 +38,11 @@ const Home = () => {
       <Paper sx={{ p: 2, mt: 2 }}>
         <Typography variant="h6">Recent Activity (last 7 days)</Typography>
         <Box sx={{ mt: 2 }}>
-          {last7.length === 0 ? (
+            {last7.length === 0 ? (
             <Typography color="text.secondary">No recent transactions</Typography>
           ) : (
             last7.map((t) => (
-              <Box key={t.id} sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+              <Box key={t.id} sx={{ display: "flex", justifyContent: "space-between", my: 1, cursor: "pointer" }} onClick={() => openDetail(t)}>
                 <Box>
                   <Typography sx={{ fontWeight: 600 }}>
                     {t.emoji ? `${t.emoji} ` : ""}{t.mainCategory ? `${t.mainCategory}/${t.category}` : t.category}
@@ -89,6 +66,34 @@ const Home = () => {
           <Add />
         </Box>
       </Drawer>
+      <Dialog open={!!selectedTxn} onClose={closeDetail} fullWidth maxWidth="sm">
+        <DialogTitle>Transaction detail</DialogTitle>
+        <DialogContent>
+          {selectedTxn && (
+            <>
+              <Typography variant="h6">{selectedTxn.emoji ? `${selectedTxn.emoji} `: ""}{selectedTxn.mainCategory ? `${selectedTxn.mainCategory}/${selectedTxn.category}` : selectedTxn.category}</Typography>
+              <Typography variant="body2" color="text.secondary">{selectedTxn.date} • {selectedTxn.account}</Typography>
+              <Typography sx={{ fontWeight: 700, mt: 1 }}>₹ {selectedTxn.amount}</Typography>
+              {selectedTxn.note && <Typography sx={{ mt: 1 }}>{selectedTxn.note}</Typography>}
+              {selectedTxn.attachments && selectedTxn.attachments.length > 0 && (
+                <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  {selectedTxn.attachments.map((a, i) => (
+                    <Box key={i} sx={{ width: 160 }}>
+                      {a.type && a.type.startsWith("image/") ? (
+                        <img src={a.dataUrl} alt={a.name} style={{ width: "100%", borderRadius: 8 }} />
+                      ) : (
+                        <Box sx={{ p: 1, border: "1px solid", borderColor: "divider", borderRadius: 1 }}>
+                          <Typography variant="caption">{a.name}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
