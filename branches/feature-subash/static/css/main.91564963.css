@@ -1,1 +1,0 @@
-:root{--app-bg:#f3f5f9;--card-radius:12px}#root,body,html{background:#f3f5f9;background:var(--app-bg);font-family:Inter,Roboto,Helvetica,Arial,sans-serif;height:100%}.app-shell{display:flex;min-height:100vh}.main-content{flex:1 1;padding:16px}.left-sidebar{padding:16px;width:220px}@media (max-width:900px){.left-sidebar{display:none}.main-content{padding:12px}}
