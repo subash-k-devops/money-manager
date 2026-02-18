@@ -1,0 +1,87 @@
+name: Branch preview (feature/**)
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  preview:
+    name: Build and publish preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Prepare gh-pages and copy build
+        env:
+          REPO: ${{ github.repository }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          SANITIZED=$(echo "${BRANCH_NAME}" | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]/-/g')
+          echo "Sanitized branch name: ${SANITIZED}"
+
+          # Clone gh-pages if exists, otherwise init an orphan gh-pages branch
+          RM_DIR=gh-pages
+          rm -rf "${RM_DIR}" || true
+          if git ls-remote --exit-code --heads "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages; then
+            git clone --depth 1 --branch gh-pages "https://x-access-token:${TOKEN}@github.com/${REPO}.git" "${RM_DIR}"
+          else
+            git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/${REPO}.git" "${RM_DIR}"
+            cd "${RM_DIR}"
+            git checkout --orphan gh-pages || true
+            git rm -rf . || true
+            git commit --allow-empty -m "Init gh-pages" || true
+            git push "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages || true
+            cd ..
+          fi
+
+          # Prepare destination folder
+          DEST="${RM_DIR}/branches/${SANITIZED}"
+          rm -rf "${DEST}"
+          mkdir -p "${DEST}"
+
+          # Copy build files
+          cp -r frontend/build/* "${DEST}/"
+
+          # Commit & push
+          cd "${RM_DIR}"
+          git config user.email "actions@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git add -A
+          if git commit -m "Preview: ${BRANCH_NAME} -> branches/${SANITIZED}" ; then
+            git push "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages
+          else
+            echo "No changes to commit for ${BRANCH_NAME}"
+          fi
+
+      - name: Print preview URL
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          SANITIZED=$(echo "${BRANCH_NAME}" | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]/-/g')
+          echo "Preview URL: https://${OWNER}.github.io/${REPO_NAME}/branches/${SANITIZED}/"
+
